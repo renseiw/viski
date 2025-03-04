@@ -25,7 +25,6 @@
       flex-direction: column;
       min-height: 100vh;
     }
-
     /* Header / Branding */
     header {
       text-align: center;
@@ -42,7 +41,6 @@
     .logo-light {
       font-weight: 300;
     }
-
     /* Main Content Area */
     main {
       width: 100%;
@@ -54,20 +52,18 @@
       flex-direction: column;
       align-items: center;
     }
-
     /* Zusätzlicher Abstand zwischen erstem Text und dem großen Kreis */
     #hello {
       max-width: 600px; 
       text-align: center;
-      margin-bottom: 40px; /* Erhöht den Abstand zum Kreis */
+      margin-bottom: 40px;
     }
-
     /* Container für Platzhalter (SVG) und Bild */
     .container {
       position: relative;
       width: 400px;
       height: 400px;
-      margin-bottom: 40px; /* Bei Bedarf hier den Abstand weiter anpassen */
+      margin-bottom: 40px;
     }
     /* SVG und Bild bekommen dieselben Maße, damit sie sich exakt überlappen */
     svg, img {
@@ -75,13 +71,11 @@
       height: 400px;
       display: block;
     }
-    /* Bild zunächst unsichtbar (display: none),
-       wird erst angezeigt, sobald es geladen ist (onload) */
+    /* Bild zunächst unsichtbar */
     #actualImage {
       display: none;
     }
-
-    /* Circle Grid (falls benötigt, hier belassen) */
+    /* Circle Grid (falls benötigt) */
     .circle-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -102,8 +96,7 @@
       background-position: center;
       background-color: #eee;
     }
-
-    /* Navigation on the right side */
+    /* Navigation on the right side mit Emojis */
     nav {
       position: fixed;
       top: 50%;
@@ -127,7 +120,6 @@
     nav a:hover {
       color: #333;
     }
-
     /* Footer / Contact */
     footer {
       text-align: center;
@@ -136,13 +128,12 @@
       color: #666;
     }
     footer a {
-      color: #666;
+      color: #666; /* Email-Adresse in schönem Grau */
       text-decoration: none;
     }
     footer a:hover {
       text-decoration: underline;
     }
-
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       nav {
@@ -160,43 +151,36 @@
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       }
     }
-
-    /* Das SVG hat feste Maße (z.B. 500×500) */
+    /* Dynamisches SVG-Netzwerk */
     svg {
       width: 500px;
       height: 500px;
       background-color: transparent;
       display: block;
     }
-
-    /* Großer Hintergrundkreis */
     .bg-circle {
-      fill: #bbb; /* Innerer Kreis */
+      fill: #bbb;
     }
-
-    /* Punkte */
     .dot {
-      fill: #fefdf9; /* Punkt-Farbe */
+      fill: #fefdf9;
     }
-
-    /* Linien */
     .net-line {
-      stroke: #fefdf9;    /* Linienfarbe */
-      stroke-width: 2; /* Linienstärke */
-	  opacity: 0.6;
+      stroke: #fefdf9;
+      stroke-width: 2;
+      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 
-  <!-- Navigation (Right Side) -->
+  <!-- Navigation (Right Side) mit Emojis -->
   <nav>
     <ul>
-      <li><a href="#hello">Hey!</a></li>
-      <li><a href="#service">Services</a></li>
-      <li><a href="#principles">Prinzipien</a></li>
-      <li><a href="#latest">Aktuelle Projekte</a></li>
-      <li><a href="#contact">Kontakt</a></li>
+      <li><a href="#hello">Hey! 👋</a></li>
+      <li><a href="#service">Services 🛠️</a></li>
+      <li><a href="#principles">Prinzipien 📜</a></li>
+      <li><a href="#latest">Projekte 🚀</a></li>
+      <li><a href="#contact">Kontakt 📞</a></li>
     </ul>
   </nav>
 
@@ -211,161 +195,157 @@
   <!-- Main Content -->
   <main>
     <p id="hello">
-      Das Netzwerk visKI vereint Experten aus den Bereichen Künstliche Intelligenz,
-      Datenvisualisierung und digitales Design, um gemeinsam neue Wege im
-      Umgang mit großen Datenmengen zu beschreiten.
+      Das Netzwerk visKI vereint Experten aus den Bereichen Künstliche Intelligenz, Datenvisualisierung und digitales Design, um gemeinsam neue Wege im Umgang mit großen Datenmengen zu beschreiten.
     </p>
-	
-<svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-  <!-- Großer Kreis als Hintergrund -->
-  <circle class="bg-circle" cx="250" cy="250" r="250" />
-
-  <!-- Gruppe für alle Linien (wird dynamisch befüllt) -->
-  <g id="linesGroup"></g>
-
-  <!-- Punkte (Kreise) -->
-  <circle class="dot" id="dot0" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot1" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot2" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot3" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot4" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot5" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot6" cx="0" cy="0" r="6" />
-  <circle class="dot" id="dot7" cx="0" cy="0" r="6" />
-</svg>
-
-<script>
-  /*
-    Wir simulieren 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen und alle miteinander verbunden sind.
-    Beim Mouseover wird der betroffene Punkt beschleunigt (Boost). Danach decayt seine Geschwindigkeit
-    innerhalb von 5 Sekunden stückweise zurück zur ursprünglichen (Basis-)Geschwindigkeit.
-  */
-  
-  const NUM_POINTS = 8;
-  const CENTER_X = 250;
-  const CENTER_Y = 250;
-  const RADIUS = 250 - 10; // 10px Puffer
-
-  // Punkte-Array, jedes Objekt enthält:
-  // x, y, vx, vy, baseVx, baseVy, boostTime, boostVx, boostVy
-  let points = [];
-  for (let i = 0; i < NUM_POINTS; i++) {
-    const angle = Math.random() * 2 * Math.PI;
-    const r = Math.random() * (RADIUS - 50) + 50; // mind. 50px vom Zentrum entfernt
-    const x = CENTER_X + r * Math.cos(angle);
-    const y = CENTER_Y + r * Math.sin(angle);
-    // Anfangsgeschwindigkeit (langsam)
-    const vx = (Math.random() - 0.5) * 0.5;
-    const vy = (Math.random() - 0.5) * 0.5;
-    points.push({ 
-      x, y, 
-      vx, vy, 
-      baseVx: vx, baseVy: vy, 
-      boostTime: null, 
-      boostVx: 0, boostVy: 0 
-    });
-  }
-
-  // Erzeuge alle Linien zwischen allen Punkten (vollständig verbunden)
-  const linesGroup = document.getElementById("linesGroup");
-  let lines = [];
-  for (let i = 0; i < NUM_POINTS; i++) {
-    for (let j = i + 1; j < NUM_POINTS; j++) {
-      const lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      lineEl.setAttribute("class", "net-line");
-      lineEl.setAttribute("x1", 0);
-      lineEl.setAttribute("y1", 0);
-      lineEl.setAttribute("x2", 0);
-      lineEl.setAttribute("y2", 0);
-      linesGroup.appendChild(lineEl);
-      lines.push({ el: lineEl, i, j });
-    }
-  }
-
-  // Hilfsfunktion: Abstand zum Mittelpunkt
-  function distToCenter(px, py) {
-    const dx = px - CENTER_X;
-    const dy = py - CENTER_Y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
-  function animate() {
-    const now = performance.now();
-    // Punkte aktualisieren
-    for (let i = 0; i < NUM_POINTS; i++) {
-      let p = points[i];
+    
+    <!-- Dynamisches SVG-Netzwerk -->
+    <svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <!-- Großer Kreis als Hintergrund -->
+      <circle class="bg-circle" cx="250" cy="250" r="250" />
+    
+      <!-- Gruppe für alle Linien (wird dynamisch befüllt) -->
+      <g id="linesGroup"></g>
+    
+      <!-- Punkte (Kreise) -->
+      <circle class="dot" id="dot0" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot1" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot2" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot3" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot4" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot5" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot6" cx="0" cy="0" r="6" />
+      <circle class="dot" id="dot7" cx="0" cy="0" r="6" />
+    </svg>
+    
+    <script>
+      /*
+        Wir simulieren 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen und alle miteinander verbunden sind.
+        Beim Mouseover 🚀 wird der betroffene Punkt beschleunigt (Boost) – danach decayed seine Geschwindigkeit
+        innerhalb von 5 Sekunden stückweise zurück zur ursprünglichen Basisgeschwindigkeit.
+      */
       
-      // Falls ein Boost aktiv ist, decaye die Geschwindigkeit linear über 5 Sekunden
-      if (p.boostTime !== null) {
-        let dt = now - p.boostTime;
-        if (dt < 5000) {
-          let fraction = dt / 5000; // von 0 bis 1
-          // Interpolation: vom Boost-Wert zurück zum Basiswert
-          p.vx = p.boostVx * (1 - fraction) + p.baseVx * fraction;
-          p.vy = p.boostVy * (1 - fraction) + p.baseVy * fraction;
-        } else {
-          // Boost abgelaufen, zurück zur Basisgeschwindigkeit
-          p.vx = p.baseVx;
-          p.vy = p.baseVy;
-          p.boostTime = null;
+      const NUM_POINTS = 8;
+      const CENTER_X = 250;
+      const CENTER_Y = 250;
+      const RADIUS = 250 - 10; // 10px Puffer
+
+      // Punkte-Array, jedes Objekt enthält:
+      // x, y, vx, vy, baseVx, baseVy, boostTime, boostVx, boostVy
+      let points = [];
+      for (let i = 0; i < NUM_POINTS; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const r = Math.random() * (RADIUS - 50) + 50; // mind. 50px vom Zentrum entfernt
+        const x = CENTER_X + r * Math.cos(angle);
+        const y = CENTER_Y + r * Math.sin(angle);
+        // Anfangsgeschwindigkeit (langsam)
+        const vx = (Math.random() - 0.5) * 0.5;
+        const vy = (Math.random() - 0.5) * 0.5;
+        points.push({ 
+          x, y, 
+          vx, vy, 
+          baseVx: vx, baseVy: vy, 
+          boostTime: null, 
+          boostVx: 0, boostVy: 0 
+        });
+      }
+
+      // Erzeuge alle Linien zwischen allen Punkten (vollständig verbunden)
+      const linesGroup = document.getElementById("linesGroup");
+      let lines = [];
+      for (let i = 0; i < NUM_POINTS; i++) {
+        for (let j = i + 1; j < NUM_POINTS; j++) {
+          const lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          lineEl.setAttribute("class", "net-line");
+          lineEl.setAttribute("x1", 0);
+          lineEl.setAttribute("y1", 0);
+          lineEl.setAttribute("x2", 0);
+          lineEl.setAttribute("y2", 0);
+          linesGroup.appendChild(lineEl);
+          lines.push({ el: lineEl, i, j });
         }
       }
-      
-      // Position aktualisieren
-      p.x += p.vx;
-      p.y += p.vy;
 
-      // Bounce: Wenn Punkt den Kreis verlässt, Geschwindigkeit umkehren und Basisgeschwindigkeit anpassen
-      if (distToCenter(p.x, p.y) > RADIUS) {
-        p.vx *= -1;
-        p.vy *= -1;
-        p.baseVx *= -1;
-        p.baseVy *= -1;
-        if (p.boostTime !== null) {
-          p.boostVx *= -1;
-          p.boostVy *= -1;
+      // Hilfsfunktion: Abstand zum Mittelpunkt
+      function distToCenter(px, py) {
+        const dx = px - CENTER_X;
+        const dy = py - CENTER_Y;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      function animate() {
+        const now = performance.now();
+        // Punkte aktualisieren
+        for (let i = 0; i < NUM_POINTS; i++) {
+          let p = points[i];
+          
+          // Falls ein Boost aktiv ist, decaye die Geschwindigkeit linear über 5 Sekunden
+          if (p.boostTime !== null) {
+            let dt = now - p.boostTime;
+            if (dt < 5000) {
+              let fraction = dt / 5000; // von 0 bis 1
+              p.vx = p.boostVx * (1 - fraction) + p.baseVx * fraction;
+              p.vy = p.boostVy * (1 - fraction) + p.baseVy * fraction;
+            } else {
+              p.vx = p.baseVx;
+              p.vy = p.baseVy;
+              p.boostTime = null;
+            }
+          }
+          
+          // Position aktualisieren
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Bounce: Wenn Punkt den Kreis verlässt, Geschwindigkeit umkehren und Basisgeschwindigkeit anpassen
+          if (distToCenter(p.x, p.y) > RADIUS) {
+            p.vx *= -1;
+            p.vy *= -1;
+            p.baseVx *= -1;
+            p.baseVy *= -1;
+            if (p.boostTime !== null) {
+              p.boostVx *= -1;
+              p.boostVy *= -1;
+            }
+          }
+          
+          // Punkt im SVG aktualisieren
+          const dotEl = document.getElementById("dot" + i);
+          dotEl.setAttribute("cx", p.x);
+          dotEl.setAttribute("cy", p.y);
         }
+        
+        // Linien aktualisieren (jeder Punkt ist mit jedem anderen verbunden)
+        for (let ln of lines) {
+          const p1 = points[ln.i];
+          const p2 = points[ln.j];
+          ln.el.setAttribute("x1", p1.x);
+          ln.el.setAttribute("y1", p1.y);
+          ln.el.setAttribute("x2", p2.x);
+          ln.el.setAttribute("y2", p2.y);
+        }
+        
+        requestAnimationFrame(animate);
       }
       
-      // Punkt im SVG aktualisieren
-      const dotEl = document.getElementById("dot" + i);
-      dotEl.setAttribute("cx", p.x);
-      dotEl.setAttribute("cy", p.y);
-    }
-    
-    // Linien aktualisieren (jeder Punkt ist mit jedem anderen verbunden)
-    for (let ln of lines) {
-      const p1 = points[ln.i];
-      const p2 = points[ln.j];
-      ln.el.setAttribute("x1", p1.x);
-      ln.el.setAttribute("y1", p1.y);
-      ln.el.setAttribute("x2", p2.x);
-      ln.el.setAttribute("y2", p2.y);
-    }
-    
-    requestAnimationFrame(animate);
-  }
-  
-  animate();
+      animate();
 
-  // Bei Mouseover: Boost auslösen – erhöhte Geschwindigkeit, die dann über 5s decayed
-  for (let i = 0; i < NUM_POINTS; i++) {
-    const dotEl = document.getElementById("dot" + i);
-    dotEl.addEventListener("mouseenter", function() {
-      let p = points[i];
-      // Setze Boost: neue, höhere Geschwindigkeiten (zufällig, hier Faktor ca. 12 gegenüber Basis)
-      p.boostVx = (Math.random() - 0.5) * 6;
-      p.boostVy = (Math.random() - 0.5) * 6;
-      p.boostTime = performance.now();
-      // Setze sofort den Boost-Wert als aktuelle Geschwindigkeit
-      p.vx = p.boostVx;
-      p.vy = p.boostVy;
-    });
-  }
-</script>
+      // Bei Mouseover: Boost auslösen – erhöhte Geschwindigkeit, die dann über 5s decayed 🚀
+      for (let i = 0; i < NUM_POINTS; i++) {
+        const dotEl = document.getElementById("dot" + i);
+        dotEl.addEventListener("mouseenter", function() {
+          let p = points[i];
+          p.boostVx = (Math.random() - 0.5) * 6;
+          p.boostVy = (Math.random() - 0.5) * 6;
+          p.boostTime = performance.now();
+          p.vx = p.boostVx;
+          p.vy = p.boostVy;
+        });
+      }
+    </script>
+    
     <!-- Beispiel-Sektionen für Navigation-Anker -->
     <section id="service" style="max-width: 600px; margin-top: 40px;">
-      <h2>Service</h2>
+      <h2>Services</h2>
       <p>
         Wir bieten umfassende Beratung und Umsetzung im Bereich KI-basierter Web-Interfaces.
       </p>
@@ -374,26 +354,27 @@
     <section id="principles" style="max-width: 600px; margin-top: 40px;">
       <h2>Prinzipien</h2>
       <p>
-        Unsere Arbeit basiert auf interdisziplinärer Zusammenarbeit, Offenheit für neue Technologien
-        und der Überzeugung, dass KI verständlich und nutzer:innen-zentriert sein sollte.
+        Unsere Arbeit basiert auf interdisziplinärer Zusammenarbeit, Offenheit für neue Technologien und der Überzeugung, dass KI verständlich und nutzer:innen-zentriert sein sollte.
       </p>
     </section>
 
     <section id="latest" style="max-width: 600px; margin-top: 40px;">
       <h2>Aktuelle Projekte</h2>
       <p>
-        Derzeit arbeiten wir an digitalen Anwendungsworkflows, bei denen wir große Datenmengen effizient erschließen, indem wir nicht nur Large Language models einsetzen, sondern auch Webplattformen nutzen, die Fähigkeiten bereitstellen, die Large Language models allein nicht leisten können.
+        Derzeit arbeiten wir an digitalen Anwendungsworkflows, mit denen wir große Datenmengen effizient erschließen – wir setzen dabei nicht nur Large Language Models ein, sondern kombinieren diese mit innovativen Webplattformen, die zusätzliche Funktionen bieten.
       </p>
     </section>
 
     <section id="contact" style="max-width: 600px; margin-top: 40px;">
-      <h2>Kontakt und Kooperation</h2>
+      <h2>Kontakt &amp; Kooperation</h2>
       <p>
         Wir haben großes Interesse an Kooperationen. Kontaktieren Sie uns unter: 
-        <a href="mailto:hey@viski.network">hey@viski.network</a>
+        <a href="mailto:hey@viski.network" style="color: #666; text-decoration: none;">hey@viski.network</a>
       </p>
     </section>
- <!-- Footer -->
+  </main>
+
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 visKI Netzwerk. Alle Rechte vorbehalten.</p>
   </footer>
