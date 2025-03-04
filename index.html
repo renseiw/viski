@@ -183,6 +183,7 @@
     .net-line {
       stroke: #fefdf9;    /* Linienfarbe */
       stroke-width: 2; /* Linienstärke */
+	  opacity: 0.6;
     }
   </style>
 </head>
@@ -214,23 +215,15 @@
       Datenvisualisierung und digitales Design, um gemeinsam neue Wege im
       Umgang mit großen Datenmengen zu beschreiten.
     </p>
+	
 <svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-  <!-- Großer Kreis als Hintergrund (Radius = 250, Mittelpunkt = (250,250)) -->
+  <!-- Großer Kreis als Hintergrund -->
   <circle class="bg-circle" cx="250" cy="250" r="250" />
 
-  <!-- Linien (werden per JS aktualisiert) -->
-  <!-- Wir legen pro Linienverbindung ein eigenes <line>-Element an -->
-  <!-- Hier ein Beispiel für ein Ringnetz mit 8 Punkten (Ring + Diagonalen) -->
-  <line class="net-line" id="line0" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line1" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line2" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line3" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line4" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line5" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line6" x1="0" y1="0" x2="0" y2="0" />
-  <line class="net-line" id="line7" x1="0" y1="0" x2="0" y2="0" />
+  <!-- Gruppe für alle Linien (wird dynamisch befüllt) -->
+  <g id="linesGroup"></g>
 
-  <!-- Punkte (Kreise), jeweils mit eigener ID, die wir im Skript ansteuern -->
+  <!-- Punkte (Kreise) -->
   <circle class="dot" id="dot0" cx="0" cy="0" r="6" />
   <circle class="dot" id="dot1" cx="0" cy="0" r="6" />
   <circle class="dot" id="dot2" cx="0" cy="0" r="6" />
@@ -242,91 +235,96 @@
 </svg>
 
 <script>
-/*
-  Dieses Skript bewegt 8 Punkte (dots) zufällig innerhalb des großen Kreises 
-  (Radius 250, Mittelpunkt (250,250)).
-  Außerdem verbindet es sie mit Linien, die sich mit den Punkten bewegen.
-  
-  - points: Array mit x, y, vx, vy (Position und Velocity)
-  - lines: Wir legen hier ein "Ring"-Netz an, 
-           d.h. line[i] verbindet dot i mit dot (i+1) mod 8.
-           Du kannst gerne mehr Linien hinzufügen, z.B. diagonale Verbindungen.
-*/
+  /*
+    Dieses Skript animiert 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen.
+    Jeder Punkt ist mit jedem anderen Punkt verbunden – das ergibt einen vollständig 
+    vernetzten Graph (n*(n-1)/2 Linien, hier 28).
+    
+    Zusätzlich wird jedem Punkt bei Maus-Hover (mouseenter) ein "Impuls" gegeben,
+    sodass er kurzzeitig schneller "wegspringt".
+  */
 
-const NUM_POINTS = 8;
-const CENTER_X = 250;
-const CENTER_Y = 250;
-const RADIUS = 250 - 10; // 10 px Puffer, damit Punkte nicht am Rand "rausfallen"
+  const NUM_POINTS = 8;
+  const CENTER_X = 250;
+  const CENTER_Y = 250;
+  const RADIUS = 250 - 10; // 10 px Puffer, damit Punkte nicht genau am Rand sitzen.
 
-// Punkte initialisieren (zufällige Position im Kreis + zufällige Geschwindigkeit)
-let points = [];
-for (let i = 0; i < NUM_POINTS; i++) {
-  // Zufällige Winkel + Radius für Startposition
-  const angle = Math.random() * 2 * Math.PI;
-  const r = Math.random() * (RADIUS - 50) + 50; // mind. 50 px vom Zentrum entfernt
-  const x = CENTER_X + r * Math.cos(angle);
-  const y = CENTER_Y + r * Math.sin(angle);
-  
-  // Zufällige Geschwindigkeiten (klein, damit sie sanft "wabern")
-  const vx = (Math.random() - 0.5) * 1.5;
-  const vy = (Math.random() - 0.5) * 1.5;
-
-  points.push({ x, y, vx, vy });
-}
-
-// Hilfsfunktion: Abstand zum Mittelpunkt
-function distToCenter(px, py) {
-  const dx = px - CENTER_X;
-  const dy = py - CENTER_Y;
-  return Math.sqrt(dx*dx + dy*dy);
-}
-
-// Animationsschleife
-function animate() {
-  // 1) Punkte aktualisieren
+  // Array mit Punktdaten: x, y, vx, vy
+  let points = [];
   for (let i = 0; i < NUM_POINTS; i++) {
-    let p = points[i];
-    // Position updaten
-    p.x += p.vx;
-    p.y += p.vy;
+    const angle = Math.random() * 2 * Math.PI;
+    const r = Math.random() * (RADIUS - 50) + 50; // mind. 50px vom Zentrum entfernt
+    const x = CENTER_X + r * Math.cos(angle);
+    const y = CENTER_Y + r * Math.sin(angle);
+    // Zufällige Geschwindigkeiten (sanftes Bewegen)
+    const vx = (Math.random() - 0.5) * 0.5;
+    const vy = (Math.random() - 0.5) * 0.5;
+    points.push({ x, y, vx, vy });
+  }
 
-    // Wenn der Punkt den Kreis verlässt, Velocity umkehren
-    // (oder anpassen, damit er wieder nach innen wandert)
-    const d = distToCenter(p.x, p.y);
-    if (d > RADIUS) {
-      // Einfache "Bounce"-Logik
-      p.vx *= -1;
-      p.vy *= -1;
+  // Erzeuge alle Linien zwischen allen Punkten (vollständig verbunden)
+  const linesGroup = document.getElementById("linesGroup");
+  let lines = [];
+  for (let i = 0; i < NUM_POINTS; i++) {
+    for (let j = i + 1; j < NUM_POINTS; j++) {
+      const lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      lineEl.setAttribute("class", "net-line");
+      lineEl.setAttribute("x1", 0);
+      lineEl.setAttribute("y1", 0);
+      lineEl.setAttribute("x2", 0);
+      lineEl.setAttribute("y2", 0);
+      linesGroup.appendChild(lineEl);
+      lines.push({ el: lineEl, i, j });
     }
-
-    // Punkt im SVG positionieren
-    const dotEl = document.getElementById('dot' + i);
-    dotEl.setAttribute('cx', p.x);
-    dotEl.setAttribute('cy', p.y);
   }
 
-  // 2) Linien aktualisieren
-  // Hier haben wir 8 Linien, jede verbindet dot i mit dot (i+1 mod 8)
+  // Hilfsfunktion: Abstand zum Mittelpunkt
+  function distToCenter(px, py) {
+    const dx = px - CENTER_X;
+    const dy = py - CENTER_Y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Animationsschleife
+  function animate() {
+    // Punkte aktualisieren
+    for (let i = 0; i < NUM_POINTS; i++) {
+      let p = points[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      // Wenn Punkt den Kreis verlässt, "Bounce" – umkehren der Geschwindigkeit
+      if (distToCenter(p.x, p.y) > RADIUS) {
+        p.vx *= -1;
+        p.vy *= -1;
+      }
+      // SVG-Punkt updaten
+      const dotEl = document.getElementById("dot" + i);
+      dotEl.setAttribute("cx", p.x);
+      dotEl.setAttribute("cy", p.y);
+    }
+    // Linien aktualisieren: Jeder Punkt ist mit jedem anderen verbunden.
+    for (let ln of lines) {
+      const p1 = points[ln.i];
+      const p2 = points[ln.j];
+      ln.el.setAttribute("x1", p1.x);
+      ln.el.setAttribute("y1", p1.y);
+      ln.el.setAttribute("x2", p2.x);
+      ln.el.setAttribute("y2", p2.y);
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Bei Maus-Hover über einen Punkt: Der Punkt "springt" weg
   for (let i = 0; i < NUM_POINTS; i++) {
-    const next = (i + 1) % NUM_POINTS; // Ring
-    const lineEl = document.getElementById('line' + i);
-
-    lineEl.setAttribute('x1', points[i].x);
-    lineEl.setAttribute('y1', points[i].y);
-    lineEl.setAttribute('x2', points[next].x);
-    lineEl.setAttribute('y2', points[next].y);
+    const dotEl = document.getElementById("dot" + i);
+    dotEl.addEventListener("mouseenter", function() {
+      // Setze für diesen Punkt eine höhere, zufällige Geschwindigkeit als Impuls
+      points[i].vx = (Math.random() - 0.5) * 6;
+      points[i].vy = (Math.random() - 0.5) * 6;
+    });
   }
-
-  // Nächsten Frame anfordern
-  requestAnimationFrame(animate);
-}
-
-// Animation starten
-animate();
 </script>
-
- 
-
     <!-- Beispiel-Sektionen für Navigation-Anker -->
     <section id="service" style="max-width: 600px; margin-top: 40px;">
       <h2>Service</h2>
@@ -351,7 +349,7 @@ animate();
     </section>
 
     <section id="contact" style="max-width: 600px; margin-top: 40px;">
-      <h2>Contact Me</h2>
+      <h2>Kontakt und Kooperation</h2>
       <p>
         Wir haben großes Interesse an Kooperationen. Kontaktieren Sie uns unter: 
         <a href="mailto:hey@viski.network">hey@viski.network</a>
