@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>visKI – Netzwerk für Visuelle KI-Onlineservices</title>
+  <!-- Import Inter Font from Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fefdf9;
+      color: #333;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header / Branding */
+    header {
+      text-align: center;
+      padding: 40px 0 20px;
+    }
+    .logo {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    /* "vis" bold, "KI" light */
+    .logo-bold {
+      font-weight: 700;
+    }
+    .logo-light {
+      font-weight: 300;
+    }
+
+    /* Main Content Area */
+    main {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 0 60px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Zusätzlicher Abstand zwischen erstem Text und dem großen Kreis */
+    #hello {
+      max-width: 600px; 
+      text-align: center;
+      margin-bottom: 40px; /* Erhöht den Abstand zum Kreis */
+    }
+
+    /* Container für Platzhalter (SVG) und Bild */
+    .container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      margin-bottom: 40px; /* Bei Bedarf hier den Abstand weiter anpassen */
+    }
+    /* SVG und Bild bekommen dieselben Maße, damit sie sich exakt überlappen */
+    svg, img {
+      width: 400px;
+      height: 400px;
+      display: block;
+    }
+    /* Bild zunächst unsichtbar (display: none),
+       wird erst angezeigt, sobald es geladen ist (onload) */
+    #actualImage {
+      display: none;
+    }
+
+    /* Circle Grid (falls benötigt, hier belassen) */
+    .circle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 30px;
+      padding: 0 20px;
+    }
+    .circle {
+      width: 100%;
+      max-width: 200px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto;
+      background-size: cover;
+      background-position: center;
+      background-color: #eee;
+    }
+
+    /* Navigation on the right side */
+    nav {
+      position: fixed;
+      top: 50%;
+      right: 30px;
+      transform: translateY(-50%);
+      text-align: right;
+      font-weight: 300;
+    }
+    nav ul {
+      list-style: none;
+    }
+    nav li {
+      margin-bottom: 15px;
+    }
+    nav a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+    nav a:hover {
+      color: #333;
+    }
+
+    /* Footer / Contact */
+    footer {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    footer a {
+      color: #666;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      nav {
+        position: static;
+        transform: none;
+        text-align: center;
+        margin: 20px 0;
+      }
+      nav ul {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .circle-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+    }
+
+    /* Das SVG hat feste Maße (z.B. 500×500) */
+    svg {
+      width: 500px;
+      height: 500px;
+      background-color: transparent;
+      display: block;
+    }
+
+    /* Großer Hintergrundkreis */
+    .bg-circle {
+      fill: #bbb; /* Innerer Kreis */
+    }
+
+    /* Punkte */
+    .dot {
+      fill: #fefdf9; /* Punkt-Farbe */
+    }
+
+    /* Linien */
+    .net-line {
+      stroke: #fefdf9;    /* Linienfarbe */
+      stroke-width: 2; /* Linienstärke */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation (Right Side) -->
+  <nav>
+    <ul>
+      <li><a href="#hello">Hey!</a></li>
+      <li><a href="#service">Services</a></li>
+      <li><a href="#principles">Prinzipien</a></li>
+      <li><a href="#latest">Aktuelle Projekte</a></li>
+      <li><a href="#contact">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <!-- Header / Hero -->
+  <header>
+    <div class="logo">
+      <span class="logo-bold">vis</span><span class="logo-light">KI</span>
+    </div>
+    <h1>Netzwerk für Visuelle KI-Onlineservices</h1>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <p id="hello">
+      Das Netzwerk visKI vereint Experten aus den Bereichen Künstliche Intelligenz,
+      Datenvisualisierung und digitales Design, um gemeinsam neue Wege im
+      Umgang mit großen Datenmengen zu beschreiten.
+    </p>
+<svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Großer Kreis als Hintergrund (Radius = 250, Mittelpunkt = (250,250)) -->
+  <circle class="bg-circle" cx="250" cy="250" r="250" />
+
+  <!-- Linien (werden per JS aktualisiert) -->
+  <!-- Wir legen pro Linienverbindung ein eigenes <line>-Element an -->
+  <!-- Hier ein Beispiel für ein Ringnetz mit 8 Punkten (Ring + Diagonalen) -->
+  <line class="net-line" id="line0" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line1" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line2" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line3" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line4" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line5" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line6" x1="0" y1="0" x2="0" y2="0" />
+  <line class="net-line" id="line7" x1="0" y1="0" x2="0" y2="0" />
+
+  <!-- Punkte (Kreise), jeweils mit eigener ID, die wir im Skript ansteuern -->
+  <circle class="dot" id="dot0" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot1" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot2" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot3" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot4" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot5" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot6" cx="0" cy="0" r="6" />
+  <circle class="dot" id="dot7" cx="0" cy="0" r="6" />
+</svg>
+
+<script>
+/*
+  Dieses Skript bewegt 8 Punkte (dots) zufällig innerhalb des großen Kreises 
+  (Radius 250, Mittelpunkt (250,250)).
+  Außerdem verbindet es sie mit Linien, die sich mit den Punkten bewegen.
+  
+  - points: Array mit x, y, vx, vy (Position und Velocity)
+  - lines: Wir legen hier ein "Ring"-Netz an, 
+           d.h. line[i] verbindet dot i mit dot (i+1) mod 8.
+           Du kannst gerne mehr Linien hinzufügen, z.B. diagonale Verbindungen.
+*/
+
+const NUM_POINTS = 8;
+const CENTER_X = 250;
+const CENTER_Y = 250;
+const RADIUS = 250 - 10; // 10 px Puffer, damit Punkte nicht am Rand "rausfallen"
+
+// Punkte initialisieren (zufällige Position im Kreis + zufällige Geschwindigkeit)
+let points = [];
+for (let i = 0; i < NUM_POINTS; i++) {
+  // Zufällige Winkel + Radius für Startposition
+  const angle = Math.random() * 2 * Math.PI;
+  const r = Math.random() * (RADIUS - 50) + 50; // mind. 50 px vom Zentrum entfernt
+  const x = CENTER_X + r * Math.cos(angle);
+  const y = CENTER_Y + r * Math.sin(angle);
+  
+  // Zufällige Geschwindigkeiten (klein, damit sie sanft "wabern")
+  const vx = (Math.random() - 0.5) * 1.5;
+  const vy = (Math.random() - 0.5) * 1.5;
+
+  points.push({ x, y, vx, vy });
+}
+
+// Hilfsfunktion: Abstand zum Mittelpunkt
+function distToCenter(px, py) {
+  const dx = px - CENTER_X;
+  const dy = py - CENTER_Y;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+// Animationsschleife
+function animate() {
+  // 1) Punkte aktualisieren
+  for (let i = 0; i < NUM_POINTS; i++) {
+    let p = points[i];
+    // Position updaten
+    p.x += p.vx;
+    p.y += p.vy;
+
+    // Wenn der Punkt den Kreis verlässt, Velocity umkehren
+    // (oder anpassen, damit er wieder nach innen wandert)
+    const d = distToCenter(p.x, p.y);
+    if (d > RADIUS) {
+      // Einfache "Bounce"-Logik
+      p.vx *= -1;
+      p.vy *= -1;
+    }
+
+    // Punkt im SVG positionieren
+    const dotEl = document.getElementById('dot' + i);
+    dotEl.setAttribute('cx', p.x);
+    dotEl.setAttribute('cy', p.y);
+  }
+
+  // 2) Linien aktualisieren
+  // Hier haben wir 8 Linien, jede verbindet dot i mit dot (i+1 mod 8)
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const next = (i + 1) % NUM_POINTS; // Ring
+    const lineEl = document.getElementById('line' + i);
+
+    lineEl.setAttribute('x1', points[i].x);
+    lineEl.setAttribute('y1', points[i].y);
+    lineEl.setAttribute('x2', points[next].x);
+    lineEl.setAttribute('y2', points[next].y);
+  }
+
+  // Nächsten Frame anfordern
+  requestAnimationFrame(animate);
+}
+
+// Animation starten
+animate();
+</script>
+
+ 
+
+    <!-- Beispiel-Sektionen für Navigation-Anker -->
+    <section id="service" style="max-width: 600px; margin-top: 40px;">
+      <h2>Service</h2>
+      <p>
+        Wir bieten umfassende Beratung und Umsetzung im Bereich KI-basierter Web-Interfaces.
+      </p>
+    </section>
+
+    <section id="principles" style="max-width: 600px; margin-top: 40px;">
+      <h2>Prinzipien</h2>
+      <p>
+        Unsere Arbeit basiert auf interdisziplinärer Zusammenarbeit, Offenheit für neue Technologien
+        und der Überzeugung, dass KI verständlich und nutzer:innen-zentriert sein sollte.
+      </p>
+    </section>
+
+    <section id="latest" style="max-width: 600px; margin-top: 40px;">
+      <h2>Aktuelle Projekte</h2>
+      <p>
+        Derzeit arbeiten wir an digitalen Anwendungsworkflows, bei denen wir große Datenmengen effizient erschließen, indem wir nicht nur Large Language models einsetzen, sondern auch Webplattformen nutzen, die Fähigkeiten bereitstellen, die Large Language models allein nicht leisten können.
+      </p>
+    </section>
+
+    <section id="contact" style="max-width: 600px; margin-top: 40px;">
+      <h2>Contact Me</h2>
+      <p>
+        Wir haben großes Interesse an Kooperationen. Kontaktieren Sie uns unter: 
+        <a href="mailto:hey@viski.network">hey@viski.network</a>
+      </p>
+    </section>
+ <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 visKI Netzwerk. Alle Rechte vorbehalten.</p>
+  </footer>
+</body>
+</html>
