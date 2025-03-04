@@ -236,30 +236,34 @@
 
 <script>
   /*
-    Dieses Skript animiert 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen.
-    Jeder Punkt ist mit jedem anderen Punkt verbunden – das ergibt einen vollständig 
-    vernetzten Graph (n*(n-1)/2 Linien, hier 28).
-    
-    Zusätzlich wird jedem Punkt bei Maus-Hover (mouseenter) ein "Impuls" gegeben,
-    sodass er kurzzeitig schneller "wegspringt".
+    Wir simulieren 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen und alle miteinander verbunden sind.
+    Beim Mouseover wird der betroffene Punkt beschleunigt (Boost). Danach decayt seine Geschwindigkeit
+    innerhalb von 5 Sekunden stückweise zurück zur ursprünglichen (Basis-)Geschwindigkeit.
   */
-
+  
   const NUM_POINTS = 8;
   const CENTER_X = 250;
   const CENTER_Y = 250;
-  const RADIUS = 250 - 10; // 10 px Puffer, damit Punkte nicht genau am Rand sitzen.
+  const RADIUS = 250 - 10; // 10px Puffer
 
-  // Array mit Punktdaten: x, y, vx, vy
+  // Punkte-Array, jedes Objekt enthält:
+  // x, y, vx, vy, baseVx, baseVy, boostTime, boostVx, boostVy
   let points = [];
   for (let i = 0; i < NUM_POINTS; i++) {
     const angle = Math.random() * 2 * Math.PI;
     const r = Math.random() * (RADIUS - 50) + 50; // mind. 50px vom Zentrum entfernt
     const x = CENTER_X + r * Math.cos(angle);
     const y = CENTER_Y + r * Math.sin(angle);
-    // Zufällige Geschwindigkeiten (sanftes Bewegen)
+    // Anfangsgeschwindigkeit (langsam)
     const vx = (Math.random() - 0.5) * 0.5;
     const vy = (Math.random() - 0.5) * 0.5;
-    points.push({ x, y, vx, vy });
+    points.push({ 
+      x, y, 
+      vx, vy, 
+      baseVx: vx, baseVy: vy, 
+      boostTime: null, 
+      boostVx: 0, boostVy: 0 
+    });
   }
 
   // Erzeuge alle Linien zwischen allen Punkten (vollständig verbunden)
@@ -285,24 +289,51 @@
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  // Animationsschleife
   function animate() {
+    const now = performance.now();
     // Punkte aktualisieren
     for (let i = 0; i < NUM_POINTS; i++) {
       let p = points[i];
+      
+      // Falls ein Boost aktiv ist, decaye die Geschwindigkeit linear über 5 Sekunden
+      if (p.boostTime !== null) {
+        let dt = now - p.boostTime;
+        if (dt < 5000) {
+          let fraction = dt / 5000; // von 0 bis 1
+          // Interpolation: vom Boost-Wert zurück zum Basiswert
+          p.vx = p.boostVx * (1 - fraction) + p.baseVx * fraction;
+          p.vy = p.boostVy * (1 - fraction) + p.baseVy * fraction;
+        } else {
+          // Boost abgelaufen, zurück zur Basisgeschwindigkeit
+          p.vx = p.baseVx;
+          p.vy = p.baseVy;
+          p.boostTime = null;
+        }
+      }
+      
+      // Position aktualisieren
       p.x += p.vx;
       p.y += p.vy;
-      // Wenn Punkt den Kreis verlässt, "Bounce" – umkehren der Geschwindigkeit
+
+      // Bounce: Wenn Punkt den Kreis verlässt, Geschwindigkeit umkehren und Basisgeschwindigkeit anpassen
       if (distToCenter(p.x, p.y) > RADIUS) {
         p.vx *= -1;
         p.vy *= -1;
+        p.baseVx *= -1;
+        p.baseVy *= -1;
+        if (p.boostTime !== null) {
+          p.boostVx *= -1;
+          p.boostVy *= -1;
+        }
       }
-      // SVG-Punkt updaten
+      
+      // Punkt im SVG aktualisieren
       const dotEl = document.getElementById("dot" + i);
       dotEl.setAttribute("cx", p.x);
       dotEl.setAttribute("cy", p.y);
     }
-    // Linien aktualisieren: Jeder Punkt ist mit jedem anderen verbunden.
+    
+    // Linien aktualisieren (jeder Punkt ist mit jedem anderen verbunden)
     for (let ln of lines) {
       const p1 = points[ln.i];
       const p2 = points[ln.j];
@@ -311,17 +342,24 @@
       ln.el.setAttribute("x2", p2.x);
       ln.el.setAttribute("y2", p2.y);
     }
+    
     requestAnimationFrame(animate);
   }
+  
   animate();
 
-  // Bei Maus-Hover über einen Punkt: Der Punkt "springt" weg
+  // Bei Mouseover: Boost auslösen – erhöhte Geschwindigkeit, die dann über 5s decayed
   for (let i = 0; i < NUM_POINTS; i++) {
     const dotEl = document.getElementById("dot" + i);
     dotEl.addEventListener("mouseenter", function() {
-      // Setze für diesen Punkt eine höhere, zufällige Geschwindigkeit als Impuls
-      points[i].vx = (Math.random() - 0.5) * 6;
-      points[i].vy = (Math.random() - 0.5) * 6;
+      let p = points[i];
+      // Setze Boost: neue, höhere Geschwindigkeiten (zufällig, hier Faktor ca. 12 gegenüber Basis)
+      p.boostVx = (Math.random() - 0.5) * 6;
+      p.boostVy = (Math.random() - 0.5) * 6;
+      p.boostTime = performance.now();
+      // Setze sofort den Boost-Wert als aktuelle Geschwindigkeit
+      p.vx = p.boostVx;
+      p.vy = p.boostVy;
     });
   }
 </script>
