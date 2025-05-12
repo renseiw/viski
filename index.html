@@ -147,6 +147,15 @@
       <details><summary>Umsetzung</summary><p>Wenn Sie mit einer konkreten Umsetzung starten möchten, entwickeln wir kleine Prototypen, testen sie in Ihrem Kontext und passen alles an, bis es praktisch hilft. Kurz und verständlich dokumentiert, damit Sie die Lösung später selbst betreuen können.</p></details>
     </section>
 
+
+    <!-- Prinzipien -->
+    <section id="principles" style="max-width:600px;margin-top:40px;">
+      <h2>Prinzipien</h2>
+      <p>Unsere Arbeit gründet auf Offenheit und Interdisziplinarität, stellt Barrierefreiheit und Privacy-by-Design in den Mittelpunkt, orientiert sich an nachhaltigem Code sowie ressourcenschonender Infrastruktur – und behält in allen KI-gestützten Workflows stets einen konsequenten Nutzer:innen-Fokus.</p>
+    </section>
+
+
+
     <!-- Projekte -->
     <section id="latest" style="max-width:600px;margin-top:40px;">
       <h2>Aktuelle Projekte</h2>
@@ -217,20 +226,47 @@ anonymisiert, um Compliance-gerechte KI-Unterstützung bei Routinetätigkeiten z
       l.setAttribute("class","net-line");grp.appendChild(l);lns.push({l,i,j});
     }
     const d=(x,y)=>Math.hypot(x-C,y-C);
-    function frame(t){
-      pts.forEach((p,i)=>{
-        if(p.bt){const f=Math.min((t-p.bt)/5000,1);p.vx=p.bvx*(1-f)+.02;p.vy=p.bvy*(1-f)+.02;if(f===1)p.bt=0;}
-        p.x+=p.vx;p.y+=p.vy;
-        if(d(p.x,p.y)>R){p.vx*=-1;p.vy*=-1;}
-        const dot=document.getElementById("dot"+i);dot.setAttribute("cx",p.x);dot.setAttribute("cy",p.y);
-      });
-      lns.forEach(o=>{
-        const a=pts[o.i],b=pts[o.j];
-        o.l.setAttribute("x1",a.x);o.l.setAttribute("y1",a.y);
-        o.l.setAttribute("x2",b.x);o.l.setAttribute("y2",b.y);
-      });
-      requestAnimationFrame(frame);
+function frame(t) {
+  pts.forEach((p, i) => {
+
+    /* Boost-Decay */
+    if (p.bt) {
+      const f = Math.min((t - p.bt) / 5000, 1);
+      p.vx = p.bvx * (1 - f) + 0.02;
+      p.vy = p.bvy * (1 - f) + 0.02;
+      if (f === 1) p.bt = 0;
     }
+
+    /* Position aktualisieren */
+    p.x += p.vx;
+    p.y += p.vy;
+
+    /* --- Bounce & Clamp ------------------------------------------ */
+    const dist = d(p.x, p.y);
+    if (dist > R) {
+      p.vx *= -1;
+      p.vy *= -1;
+      const angle = Math.atan2(p.y - C, p.x - C);
+      p.x = C + R * Math.cos(angle);
+      p.y = C + R * Math.sin(angle);
+    }
+
+    /* SVG-Dot setzen */
+    const dot = document.getElementById('dot' + i);
+    dot.setAttribute('cx', p.x);
+    dot.setAttribute('cy', p.y);
+  });
+
+  /* Linien aktualisieren */
+  lns.forEach(o => {
+    const a = pts[o.i], b = pts[o.j];
+    o.l.setAttribute('x1', a.x); o.l.setAttribute('y1', a.y);
+    o.l.setAttribute('x2', b.x); o.l.setAttribute('y2', b.y);
+  });
+
+  requestAnimationFrame(frame);
+}
+
     requestAnimationFrame(frame);
     pts.forEach((p,i)=>{
       document.getElementById("dot"+i).addEventListener("mouseenter",()=>{
