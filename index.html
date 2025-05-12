@@ -1,179 +1,103 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>visKI – Netzwerk für Visuelle KI-Onlineservices</title>
-  <!-- Import Inter Font from Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap"
-    rel="stylesheet"
-  />
+
+  <!-- Inter-Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet"/>
+
   <style>
+    /* ---------- Design-System ---------- */
+    :root{ --viski-purple:#9b5de5; }
+
     /* Reset & Base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Inter',sans-serif;
+      background:#fefdf9;
+      color:#333;line-height:1.55;
+      display:flex;flex-direction:column;min-height:100vh;
     }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #fefdf9;
-      color: #333;
-      line-height: 1.5;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+
+    /* Header */
+    header{text-align:center;padding:40px 0 20px;}
+    .logo{font-size:2.5rem;margin-bottom:10px;}
+    .logo-bold{font-weight:700;}
+    .logo-light{font-weight:300;}
+
+    /* Main wrapper */
+    main{
+      width:100%;max-width:1100px;margin:0 auto;
+      padding:20px 0 60px;
+      display:flex;flex-direction:column;align-items:flex-start;
     }
-    /* Header / Branding */
-    header {
-      text-align: center;
-      padding: 40px 0 20px;
+
+    /* Intro-Text */
+    #hello{
+      position:relative;z-index:2;
+      max-width:650px;margin:0 auto 60px;text-align:center;
     }
-    .logo {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
+
+    /* Netzwerk-Container */
+    .container{
+      width:500px;height:500px;margin:-50px auto 40px;
+      position:relative;border-radius:50%;background:transparent;
     }
-    /* "vis" bold, "KI" light */
-    .logo-bold {
-      font-weight: 700;
+    .container svg{position:absolute;inset:0;width:100%;height:100%;}
+
+    /* Navigation rechts */
+    nav{position:fixed;top:50%;right:30px;transform:translateY(-50%);
+        text-align:right;font-weight:300;}
+    nav ul{list-style:none;}
+    nav li{margin-bottom:15px;}
+    nav a{color:#888;text-decoration:none;font-size:.9rem;transition:color .2s;}
+    nav a:hover{color:#333;}
+
+    /* Accordion */
+    details{border:1px solid #ddd;border-radius:4px;margin-bottom:10px;padding:10px;background:#fff;width:100%;}
+    summary{font-weight:700;cursor:pointer;}
+    details p{margin-top:10px;}
+
+    /* ---------- Förderung ---------- */
+    .funding-block{text-align:center;margin:40px 0;}
+    .funding-block img{width:220px;height:auto;margin-top:6px;}
+
+    /* Footer */
+    footer{text-align:center;padding:20px 0 40px;font-size:.9rem;color:#666;}
+    footer a{color:#666;text-decoration:none;}
+    footer a:hover{text-decoration:underline;}
+
+    /* Impressum-Overlay */
+    #impOverlay{
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,.6);
+      z-index:9999;justify-content:center;align-items:center;
     }
-    .logo-light {
-      font-weight: 300;
+    #impBox{
+      background:#fff;border-radius:8px;padding:30px 25px;width:90%;max-width:600px;
+      box-shadow:0 4px 18px rgba(0,0,0,.2);font-size:.9rem;line-height:1.45;
+      overflow:auto;max-height:85vh;
     }
-    /* Main Content Area */
-    main {
-      width: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px 0 60px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    #impBox h3{margin-bottom:12px;font-size:1.1rem;font-weight:700;text-align:center;}
+    #impClose{display:block;margin:25px auto 0;padding:6px 18px;background:#eee;border:none;border-radius:4px;cursor:pointer;}
+
+    /* Mobile Nav */
+    @media(max-width:768px){
+      nav{position:static;transform:none;text-align:center;margin:20px 0;}
+      nav ul{display:inline-flex;flex-wrap:wrap;gap:15px;}
     }
-    /* Zusätzlicher Abstand zwischen erstem Text und dem großen Kreis */
-    #hello {
-      max-width: 600px; 
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    /* Container für Platzhalter (SVG) und Bild */
-    .container {
-      position: relative;
-      width: 400px;
-      height: 400px;
-      margin-bottom: 40px;
-    }
-    /* SVG und Bild bekommen dieselben Maße, damit sie sich exakt überlappen */
-    svg, img {
-      width: 400px;
-      height: 400px;
-      display: block;
-    }
-    /* Bild zunächst unsichtbar */
-    #actualImage {
-      display: none;
-    }
-    /* Circle Grid (falls benötigt) */
-    .circle-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 900px;
-      margin-top: 30px;
-      padding: 0 20px;
-    }
-    .circle {
-      width: 100%;
-      max-width: 200px;
-      aspect-ratio: 1/1;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto;
-      background-size: cover;
-      background-position: center;
-      background-color: #eee;
-    }
-    /* Navigation on the right side mit Emojis */
-    nav {
-      position: fixed;
-      top: 50%;
-      right: 30px;
-      transform: translateY(-50%);
-      text-align: right;
-      font-weight: 300;
-    }
-    nav ul {
-      list-style: none;
-    }
-    nav li {
-      margin-bottom: 15px;
-    }
-    nav a {
-      color: #888;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s ease;
-    }
-    nav a:hover {
-      color: #333;
-    }
-    /* Footer / Contact */
-    footer {
-      text-align: center;
-      padding: 20px 0;
-      font-size: 0.9rem;
-      color: #666;
-    }
-    footer a {
-      color: #666; /* Email-Adresse in schönem Grau */
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-      nav {
-        position: static;
-        transform: none;
-        text-align: center;
-        margin: 20px 0;
-      }
-      nav ul {
-        display: inline-flex;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      .circle-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      }
-    }
-    /* Dynamisches SVG-Netzwerk */
-    svg {
-      width: 500px;
-      height: 500px;
-      background-color: transparent;
-      display: block;
-    }
-    .bg-circle {
-      fill: #bbb;
-    }
-    .dot {
-      fill: #fefdf9;
-    }
-    .net-line {
-      stroke: #fefdf9;
-      stroke-width: 2;
-      opacity: 0.6;
-    }
+
+    /* Netzwerk-SVG */
+    .bg-circle{fill:transparent;}
+    .dot{fill:var(--viski-purple);}
+    .net-line{stroke:var(--viski-purple);stroke-width:2;opacity:.6;}
   </style>
 </head>
 <body>
 
-  <!-- Navigation (Right Side) mit Emojis -->
+  <!-- Navigation -->
   <nav>
     <ul>
       <li><a href="#hello">Hey! 👋</a></li>
@@ -184,199 +108,145 @@
     </ul>
   </nav>
 
-  <!-- Header / Hero -->
+  <!-- Header -->
   <header>
-    <div class="logo">
-      <span class="logo-bold">vis</span><span class="logo-light">KI</span>
-    </div>
+    <div class="logo"><span class="logo-bold">vis</span><span class="logo-light">KI</span></div>
     <h1>Netzwerk für Visuelle KI-Onlineservices</h1>
   </header>
 
-  <!-- Main Content -->
+  <!-- Main -->
   <main>
     <p id="hello">
-      Das Netzwerk visKI vereint Experten aus den Bereichen Künstliche Intelligenz, Datenvisualisierung und digitales Design, um gemeinsam neue Wege im Umgang mit großen Datenmengen zu beschreiten.
+      Hey! Wir sind das Netzwerk <strong>visKI</strong> – Expert:innen für Künstliche Intelligenz, Datenvisualisierung und digitales Design.  
+      Mit skalierbaren Workflows eröffnen wir neue Wege, große Datenmengen verständlich aufzubereiten und mit ihnen zu interagieren.  
+      Auf dieser Seite erhalten Sie einen schnellen Überblick über unsere Services, laufenden Projekte und die Prinzipien, die unsere Arbeit leiten.
     </p>
-    
-    <!-- Dynamisches SVG-Netzwerk -->
-    <svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-      <!-- Großer Kreis als Hintergrund -->
-      <circle class="bg-circle" cx="250" cy="250" r="250" />
-    
-      <!-- Gruppe für alle Linien (wird dynamisch befüllt) -->
-      <g id="linesGroup"></g>
-    
-      <!-- Punkte (Kreise) -->
-      <circle class="dot" id="dot0" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot1" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot2" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot3" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot4" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot5" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot6" cx="0" cy="0" r="6" />
-      <circle class="dot" id="dot7" cx="0" cy="0" r="6" />
-    </svg>
-    
-    <script>
-      /*
-        Wir simulieren 8 Punkte, die sich zufällig innerhalb eines Kreises bewegen und alle miteinander verbunden sind.
-        Beim Mouseover 🚀 wird der betroffene Punkt beschleunigt (Boost) – danach decayed seine Geschwindigkeit
-        innerhalb von 5 Sekunden stückweise zurück zur ursprünglichen Basisgeschwindigkeit.
-      */
-      
-      const NUM_POINTS = 8;
-      const CENTER_X = 250;
-      const CENTER_Y = 250;
-      const RADIUS = 250 - 10; // 10px Puffer
 
-      // Punkte-Array, jedes Objekt enthält:
-      // x, y, vx, vy, baseVx, baseVy, boostTime, boostVx, boostVy
-      let points = [];
-      for (let i = 0; i < NUM_POINTS; i++) {
-        const angle = Math.random() * 2 * Math.PI;
-        const r = Math.random() * (RADIUS - 50) + 50; // mind. 50px vom Zentrum entfernt
-        const x = CENTER_X + r * Math.cos(angle);
-        const y = CENTER_Y + r * Math.sin(angle);
-        // Anfangsgeschwindigkeit (langsam)
-        const vx = (Math.random() - 0.5) * 0.5;
-        const vy = (Math.random() - 0.5) * 0.5;
-        points.push({ 
-          x, y, 
-          vx, vy, 
-          baseVx: vx, baseVy: vy, 
-          boostTime: null, 
-          boostVx: 0, boostVy: 0 
-        });
-      }
+    <!-- Netzwerk -->
+    <div class="container">
+      <svg id="network" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <circle class="bg-circle" cx="250" cy="250" r="250"/>
+        <g id="linesGroup"></g>
+        <!-- 8 Punkte -->
+        <circle class="dot" id="dot0" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot1" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot2" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot3" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot4" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot5" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot6" cx="0" cy="0" r="6"/>
+        <circle class="dot" id="dot7" cx="0" cy="0" r="6"/>
+      </svg>
+    </div>
 
-      // Erzeuge alle Linien zwischen allen Punkten (vollständig verbunden)
-      const linesGroup = document.getElementById("linesGroup");
-      let lines = [];
-      for (let i = 0; i < NUM_POINTS; i++) {
-        for (let j = i + 1; j < NUM_POINTS; j++) {
-          const lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          lineEl.setAttribute("class", "net-line");
-          lineEl.setAttribute("x1", 0);
-          lineEl.setAttribute("y1", 0);
-          lineEl.setAttribute("x2", 0);
-          lineEl.setAttribute("y2", 0);
-          linesGroup.appendChild(lineEl);
-          lines.push({ el: lineEl, i, j });
-        }
-      }
-
-      // Hilfsfunktion: Abstand zum Mittelpunkt
-      function distToCenter(px, py) {
-        const dx = px - CENTER_X;
-        const dy = py - CENTER_Y;
-        return Math.sqrt(dx * dx + dy * dy);
-      }
-
-      function animate() {
-        const now = performance.now();
-        // Punkte aktualisieren
-        for (let i = 0; i < NUM_POINTS; i++) {
-          let p = points[i];
-          
-          // Falls ein Boost aktiv ist, decaye die Geschwindigkeit linear über 5 Sekunden
-          if (p.boostTime !== null) {
-            let dt = now - p.boostTime;
-            if (dt < 5000) {
-              let fraction = dt / 5000; // von 0 bis 1
-              p.vx = p.boostVx * (1 - fraction) + p.baseVx * fraction;
-              p.vy = p.boostVy * (1 - fraction) + p.baseVy * fraction;
-            } else {
-              p.vx = p.baseVx;
-              p.vy = p.baseVy;
-              p.boostTime = null;
-            }
-          }
-          
-          // Position aktualisieren
-          p.x += p.vx;
-          p.y += p.vy;
-
-          // Bounce: Wenn Punkt den Kreis verlässt, Geschwindigkeit umkehren und Basisgeschwindigkeit anpassen
-          if (distToCenter(p.x, p.y) > RADIUS) {
-            p.vx *= -1;
-            p.vy *= -1;
-            p.baseVx *= -1;
-            p.baseVy *= -1;
-            if (p.boostTime !== null) {
-              p.boostVx *= -1;
-              p.boostVy *= -1;
-            }
-          }
-          
-          // Punkt im SVG aktualisieren
-          const dotEl = document.getElementById("dot" + i);
-          dotEl.setAttribute("cx", p.x);
-          dotEl.setAttribute("cy", p.y);
-        }
-        
-        // Linien aktualisieren (jeder Punkt ist mit jedem anderen verbunden)
-        for (let ln of lines) {
-          const p1 = points[ln.i];
-          const p2 = points[ln.j];
-          ln.el.setAttribute("x1", p1.x);
-          ln.el.setAttribute("y1", p1.y);
-          ln.el.setAttribute("x2", p2.x);
-          ln.el.setAttribute("y2", p2.y);
-        }
-        
-        requestAnimationFrame(animate);
-      }
-      
-      animate();
-
-      // Bei Mouseover: Boost auslösen – erhöhte Geschwindigkeit, die dann über 5s decayed 🚀
-      for (let i = 0; i < NUM_POINTS; i++) {
-        const dotEl = document.getElementById("dot" + i);
-        dotEl.addEventListener("mouseenter", function() {
-          let p = points[i];
-          p.boostVx = (Math.random() - 0.5) * 6;
-          p.boostVy = (Math.random() - 0.5) * 6;
-          p.boostTime = performance.now();
-          p.vx = p.boostVx;
-          p.vy = p.boostVy;
-        });
-      }
-    </script>
-    
-    <!-- Beispiel-Sektionen für Navigation-Anker -->
-    <section id="service" style="max-width: 600px; margin-top: 40px;">
-      <h2>Services</h2>
-      <p>
-        Wir bieten umfassende Beratung und Umsetzung im Bereich KI-basierter Web-Interfaces.
-      </p>
+    <!-- Services -->
+    <section id="service" style="max-width:600px;margin-top:40px;">
+      <h2>Services </h2>
+      <p>Wir bieten umfassende Beratung und Umsetzung im Bereich KI-basierter Web-Interfaces. Dabei hören wir zuerst zu, werfen gemeinsam einen Blick auf Ihre Abläufe und Daten und prüfen, ob und wo KI wirklich sinnvoll wäre. Danach wissen Sie klar, welche nächsten Schritte sich lohnen.</p>
+      <details><summary>Beratung</summary><p>Wir entwickeln mit Ihnen realistische KI-Ideen für ihre Bedarfe. Dabei hören wir zuerst zu, werfen gemeinsam einen Blick auf Ihre Abläufe und Daten und prüfen, ob und wo KI wirklich sinnvoll wäre. Danach wissen Sie klar, welche nächsten Schritte sich lohnen können.</p></details>
+      <details><summary>Umsetzung</summary><p>Wenn Sie mit einer konkreten Umsetzung starten möchten, entwickeln wir kleine Prototypen, testen sie in Ihrem Kontext und passen alles an, bis es praktisch hilft. Kurz und verständlich dokumentiert, damit Sie die Lösung später selbst betreuen können.</p></details>
     </section>
 
-    <section id="principles" style="max-width: 600px; margin-top: 40px;">
-      <h2>Prinzipien</h2>
-      <p>
-        Unsere Arbeit basiert auf interdisziplinärer Zusammenarbeit, Offenheit für neue Technologien und der Überzeugung, dass KI verständlich und nutzer:innen-zentriert sein sollte.
-      </p>
-    </section>
-
-    <section id="latest" style="max-width: 600px; margin-top: 40px;">
+    <!-- Projekte -->
+    <section id="latest" style="max-width:600px;margin-top:40px;">
       <h2>Aktuelle Projekte</h2>
-      <p>
-        Derzeit arbeiten wir an digitalen Anwendungsworkflows, mit denen wir große Datenmengen effizient erschließen – wir setzen dabei nicht nur Large Language Models ein, sondern kombinieren diese mit innovativen Webplattformen, die zusätzliche Funktionen bieten.
-      </p>
+      <p>Derzeit arbeiten wir an folgenden Workflows:</p>
+      <details><summary>Mythoskop</summary><p>Das Projekt Mythoskop nutzt KI-gestützte Wissensextraktion,um antike Mythen nutzer*innenzentriert aufzubereiten – textlich wie visuell. Dynamische Grafiken veranschaulichen genealogische Beziehungen, narrative Strukturen und geografische Kontexte. Large-Language-Models verknüpfen die Daten logisch, ermöglichen mehrsprachigen Austausch und bieten eine natürliche Sprachschnittstelle per Chat. </p></details>
+      <details><summary>Privacy-by-Design-Plattform</summary><p>Die Privacy-by-Design-Plattform ist ein Projekt zur Entwicklung sicherer und vertrauenswürdiger KI-Anwendungen, bei denen Datenschutz und Sicherheit im Vordergrund stehen.  Hierz werden Daten client-seitig
+anonymisiert, um Compliance-gerechte KI-Unterstützung bei Routinetätigkeiten zu ermöglichen</p></details>
     </section>
 
-    <section id="contact" style="max-width: 600px; margin-top: 40px;">
+    <!-- Prinzipien -->
+    <section id="principles" style="max-width:600px;margin-top:40px;">
+      <h2>Prinzipien</h2>
+      <p>Unsere Arbeit gründet auf Offenheit und Interdisziplinarität, stellt Barrierefreiheit und Privacy-by-Design in den Mittelpunkt, orientiert sich an nachhaltigem Code sowie ressourcenschonender Infrastruktur – und behält in allen KI-gestützten Workflows stets einen konsequenten Nutzer:innen-Fokus.</p>
+    </section>
+
+    <!-- Kontakt -->
+    <section id="contact" style="max-width:600px;margin-top:40px;">
       <h2>Kontakt &amp; Kooperation</h2>
-      <p>
-        Wir haben großes Interesse an Kooperationen. Kontaktieren Sie uns unter: 
-        <a href="mailto:hey@viski.network" style="color: #666; text-decoration: none;">hey@viski.network</a>
-      </p>
+      <p>Schreiben Sie uns unter <a href="mailto:hey@viski.network">hey@viski.network</a> – wir freuen uns auf Ihr Projekt.</p>
     </section>
   </main>
 
+  <!-- Förderung -->
+  <div class="funding-block">
+    Gefördert durch das Programm <strong>Cross&nbsp;Innovation</strong> des Landes Sachsen-Anhalt<br>
+    (Investitionsbank Sachsen-Anhalt, kofinanziert aus Mitteln des EFRE).<br>
+    <img src="csm_ST_EU_Kofinanziert_4c_1c4d4085ee.png"
+         alt="Förderlogo Cross Innovation – EU/EFRE / Land Sachsen-Anhalt">
+  </div>
+
   <!-- Footer -->
   <footer>
-    <p>&copy; 2025 visKI Netzwerk. Alle Rechte vorbehalten.</p>
+    &copy;&nbsp;2025&nbsp;visKI&nbsp;Netzwerk. Alle Rechte vorbehalten.&nbsp;|&nbsp;
+    <a href="#" id="impOpen">Impressum</a>
   </footer>
+
+  <!-- Impressum-Overlay -->
+  <div id="impOverlay">
+    <div id="impBox">
+      <h3>Impressum</h3>
+      <p><strong>visKI Netzwerk GbR</strong><br>Musterstraße&nbsp;12<br>39104&nbsp;Magdeburg</p>
+      <p>Vertreten durch: Max Mustermann, Lina Beispiel</p>
+      <p>Kontakt:<br>Tel.: +49 391 1234567<br>E-Mail: <a href="mailto:hey@viski.network">hey@viski.network</a></p>
+      <p>USt-IdNr.: DE 123456789</p>
+      <p>Inhaltlich Verantwortlich (§55 Abs. 2 RStV): Max Mustermann (Adresse wie oben)</p>
+      <p style="font-size:.8rem;color:#777">
+        Haftungshinweis: Trotz sorgfältiger Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links.
+        Für den Inhalt verlinkter Seiten sind ausschließlich deren Betreiber verantwortlich.
+      </p>
+      <button id="impClose">Schließen</button>
+    </div>
+  </div>
+
+  <!-- ---------- JavaScript ---------- -->
+  <script>
+    /* ----- Netzwerk-Animation ----- */
+    const N=8,C=250,R=240,pts=[],lns=[],grp=document.getElementById("linesGroup");
+    for(let i=0;i<N;i++){
+      const a=Math.random()*Math.PI*2,r=Math.random()*(R-50)+50;
+      pts.push({
+        x:C+r*Math.cos(a),y:C+r*Math.sin(a),
+        vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+        bvx:0,bvy:0,bt:0
+      });
+    }
+    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){
+      const l=document.createElementNS("http://www.w3.org/2000/svg","line");
+      l.setAttribute("class","net-line");grp.appendChild(l);lns.push({l,i,j});
+    }
+    const d=(x,y)=>Math.hypot(x-C,y-C);
+    function frame(t){
+      pts.forEach((p,i)=>{
+        if(p.bt){const f=Math.min((t-p.bt)/5000,1);p.vx=p.bvx*(1-f)+.02;p.vy=p.bvy*(1-f)+.02;if(f===1)p.bt=0;}
+        p.x+=p.vx;p.y+=p.vy;
+        if(d(p.x,p.y)>R){p.vx*=-1;p.vy*=-1;}
+        const dot=document.getElementById("dot"+i);dot.setAttribute("cx",p.x);dot.setAttribute("cy",p.y);
+      });
+      lns.forEach(o=>{
+        const a=pts[o.i],b=pts[o.j];
+        o.l.setAttribute("x1",a.x);o.l.setAttribute("y1",a.y);
+        o.l.setAttribute("x2",b.x);o.l.setAttribute("y2",b.y);
+      });
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    pts.forEach((p,i)=>{
+      document.getElementById("dot"+i).addEventListener("mouseenter",()=>{
+        p.bvx=(Math.random()-.5)*6;p.bvy=(Math.random()-.5)*6;p.bt=performance.now();
+        p.vx=p.bvx;p.vy=p.bvy;
+      });
+    });
+
+    /* ----- Impressum Overlay ----- */
+    const o=document.getElementById('impOverlay'),
+          b=document.getElementById('impBox'),
+          open=document.getElementById('impOpen'),
+          close=document.getElementById('impClose');
+    open.addEventListener('click',e=>{e.preventDefault();o.style.display='flex';});
+    close.addEventListener('click',()=>o.style.display='none');
+    o.addEventListener('click',e=>{if(e.target===o)o.style.display='none';});
+  </script>
 </body>
 </html>
